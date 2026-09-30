@@ -1,0 +1,46 @@
+# The configurations under comparison and the pre-registered decision rule.
+# Changing the rule after seeing results defeats its purpose: do it in a separate,
+# explained commit, never in the same commit as new results.
+
+[[candidate]]
+name = "opus-5.5-medium"
+model = "claude-opus-5-5"
+effort = "medium"
+note = "Current production default in production-rag-service"
+
+[[candidate]]
+name = "opus-5.5-low"
+model = "claude-opus-5-5"
+effort = "low"
+
+[[candidate]]
+name = "sonnet-5.5-medium"
+model = "claude-sonnet-5-5"
+effort = "medium"
+
+[[candidate]]
+name = "sonnet-5.5-low"
+model = "claude-sonnet-5-5"
+effort = "low"
+
+[[candidate]]
+name = "haiku-4.5"
+model = "claude-haiku-4-5"
+note = "Haiku 4.5 does not accept the effort parameter; runs without extended thinking"
+
+[decision]
+# Eligibility gates: a candidate failing any of these cannot be recommended.
+min_abstention_accuracy = 0.80   # must say "I don't know" when the context lacks the answer
+min_citation_accuracy = 0.90     # must cite the right document when it answers
+max_failure_rate = 0.02          # refusals + API errors
+max_p95_latency_seconds = 10.0
+
+# Among eligible candidates, pick the cheapest one that is non-inferior to the
+# quality leader: the upper bound of the paired 95% bootstrap interval of
+# (leader pass rate - candidate pass rate) must be at most this margin.
+non_inferiority_margin = 0.05
+bootstrap_resamples = 2000
+seed = 7
+
+# The configuration production runs today; the memo reports every change relative to it.
+baseline = "opus-5.5-medium"
