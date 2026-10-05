@@ -1,0 +1,122 @@
+{
+  "chosen": null,
+  "leader": null,
+  "rationale": "No candidate passed the eligibility gates, so none can be recommended.",
+  "candidates": [
+    {
+      "name": "opus-5.5-medium",
+      "model": "claude-opus-5-5",
+      "effort": "medium",
+      "pass_rate": 0.8888888888888888,
+      "pass_rate_ci": [
+        0.8,
+        0.9777777777777777
+      ],
+      "keyword_recall": 0.8846153846153846,
+      "citation_accuracy": 0.8717948717948718,
+      "abstention_accuracy": 1.0,
+      "false_abstention_rate": 0.1282051282051282,
+      "failure_rate": 0.0,
+      "latency_p50": 2.875060803999986,
+      "latency_p95": 6.058807540199995,
+      "cost_per_1k": 9.543555555555555,
+      "total_cost": 0.42946,
+      "eligible": false,
+      "reasons": [
+        "citation accuracy 87% < 90%"
+      ]
+    },
+    {
+      "name": "opus-5.5-low",
+      "model": "claude-opus-5-5",
+      "effort": "low",
+      "pass_rate": 0.8888888888888888,
+      "pass_rate_ci": [
+        0.8,
+        0.9777777777777777
+      ],
+      "keyword_recall": 0.8846153846153846,
+      "citation_accuracy": 0.8717948717948718,
+      "abstention_accuracy": 1.0,
+      "false_abstention_rate": 0.1282051282051282,
+      "failure_rate": 0.0,
+      "latency_p50": 2.5961002829999984,
+      "latency_p95": 3.726505633399972,
+      "cost_per_1k": 9.020888888888893,
+      "total_cost": 0.40594000000000013,
+      "eligible": false,
+      "reasons": [
+        "citation accuracy 87% < 90%"
+      ]
+    },
+    {
+      "name": "sonnet-5.5-medium",
+      "model": "claude-sonnet-5-5",
+      "effort": "medium",
+      "pass_rate": 0.8888888888888888,
+      "pass_rate_ci": [
+        0.8,
+        0.9777777777777777
+      ],
+      "keyword_recall": 0.8717948717948718,
+      "citation_accuracy": 0.8717948717948718,
+      "abstention_accuracy": 1.0,
+      "false_abstention_rate": 0.1282051282051282,
+      "failure_rate": 0.0,
+      "latency_p50": 1.8530148879999615,
+      "latency_p95": 4.882591980799973,
+      "cost_per_1k": 4.269777777777779,
+      "total_cost": 0.19214000000000003,
+      "eligible": false,
+      "reasons": [
+        "citation accuracy 87% < 90%"
+      ]
+    },
+    {
+      "name": "sonnet-5.5-low",
+      "model": "claude-sonnet-5-5",
+      "effort": "low",
+      "pass_rate": 0.8888888888888888,
+      "pass_rate_ci": [
+        0.8,
+        0.9777777777777777
+      ],
+      "keyword_recall": 0.8717948717948718,
+      "citation_accuracy": 0.8717948717948718,
+      "abstention_accuracy": 1.0,
+      "false_abstention_rate": 0.1282051282051282,
+      "failure_rate": 0.0,
+      "latency_p50": 1.716367009999999,
+      "latency_p95": 4.233996797599989,
+      "cost_per_1k": 4.246,
+      "total_cost": 0.19107000000000002,
+      "eligible": false,
+      "reasons": [
+        "citation accuracy 87% < 90%"
+      ]
+    },
+    {
+      "name": "haiku-4.5",
+      "model": "claude-haiku-4-5",
+      "effort": null,
+      "pass_rate": 0.8666666666666667,
+      "pass_rate_ci": [
+        0.7555555555555555,
+        0.9555555555555556
+      ],
+      "keyword_recall": 0.8461538461538461,
+      "citation_accuracy": 0.8717948717948718,
+      "abstention_accuracy": 1.0,
+      "false_abstention_rate": 0.1282051282051282,
+      "failure_rate": 0.0,
+      "latency_p50": 0.8152309210000226,
+      "latency_p95": 1.1213462128000284,
+      "cost_per_1k": 1.3835555555555559,
+      "total_cost": 0.06226000000000001,
+      "eligible": false,
+      "reasons": [
+        "citation accuracy 87% < 90%"
+      ]
+    }
+  ]
+}

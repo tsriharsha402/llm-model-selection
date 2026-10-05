@@ -23,7 +23,34 @@ keep `claude-opus-5-5`, or move to a cheaper configuration?
 | **Evidence** | 45 real questions with frozen retrieval context, graded deterministically: required facts, correct citation, correct "I don't know" |
 | **Decision rule** | Cheapest candidate that passes the quality gates and is statistically non-inferior (within 5 points) to the best one. [Pre-registered](docs/evaluation-plan.md) |
 | **Budget** | Estimated $0.70-$4.65 for a full run (`make estimate`) |
-| **Status** | Framework complete and tested. **First run pending**; the [memo](memo/RECOMMENDATION.md) is generated from its results |
+| **First run** | 2026-10-05, 225 calls, $1.28. **No candidate passed the gates**: all five scored 87.2% citation accuracy against a 90% gate. See [results](#results-2026-10-05) and the [memo](memo/RECOMMENDATION.md) |
+
+## Results (2026-10-05)
+
+Full output in [`results/2026-10-05/`](results/2026-10-05/): raw answers, summary and chart.
+
+| Candidate | Pass rate (95% CI) | Citation acc. | Abstention acc. | Latency p50 / p95 | Cost / 1K questions |
+|---|---|---|---|---|---|
+| opus-5.5-medium (baseline) | 88.9% (80%-98%) | 87.2% | 100% | 2.9s / 6.1s | $9.54 |
+| opus-5.5-low | 88.9% (80%-98%) | 87.2% | 100% | 2.6s / 3.7s | $9.02 |
+| sonnet-5.5-medium | 88.9% (80%-98%) | 87.2% | 100% | 1.9s / 4.9s | $4.27 |
+| sonnet-5.5-low | 88.9% (80%-98%) | 87.2% | 100% | 1.7s / 4.2s | $4.25 |
+| haiku-4.5 | 86.7% (76%-96%) | 87.2% | 100% | 0.8s / 1.1s | $1.38 |
+
+**Decision: none.** Every candidate failed the pre-registered 90% citation gate, so the rule
+recommends nothing and production stays on the baseline. The gate is not being changed after
+the fact.
+
+**Why every model scored the same:** all five fail the same 5 answerable questions, and in
+each one the frozen retrieval context does not contain the required fact. The models
+correctly answer "I don't know", which counts as a citation miss. 34 of 39 answerable
+questions is 87.2%, the ceiling for any model on this context. The blocker is retrieval in
+production-rag-service, not model choice.
+
+**What the run does show:** on the questions where the context has the answer, Sonnet 5.5
+matches Opus 5.5 at under half the cost, and Haiku 4.5 is one question behind at a seventh of
+the cost and under 1.1s p95. No model ever answered an unanswerable question, refused or
+errored. Re-run after retrieval is fixed to get a decision.
 
 ## Why this approach
 
