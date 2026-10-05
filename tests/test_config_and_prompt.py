@@ -18,6 +18,11 @@ def test_dataset_is_consistent(cases):
         if case.expected_behavior == "answer":
             assert case.expected_doc in {s.doc_id for s in case.sources}, case.id
             assert case.expected_keywords, case.id
+            # The required facts must be in the context the model sees; otherwise the
+            # correct behavior is to abstain and the case is mislabeled.
+            context = " ".join(s.text for s in case.sources).lower()
+            for keyword in case.expected_keywords:
+                assert keyword.lower() in context, f"{case.id}: {keyword!r} not in context"
         else:
             assert case.expected_behavior == "abstain"
 
