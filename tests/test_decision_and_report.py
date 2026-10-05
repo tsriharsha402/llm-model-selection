@@ -39,6 +39,7 @@ def test_cheaper_equal_quality_candidate_is_recommended(tmp_path, rule):
     assert rec.leader == "small"  # tie on quality, so the cheaper one leads
     assert rec.chosen == "small"
     assert rec.verdicts["small"].non_inferior
+    assert "ties for the highest pass rate" in rec.rationale
 
 
 def test_worse_candidate_is_not_recommended(tmp_path, rule):
@@ -61,6 +62,8 @@ def test_report_and_memo(tmp_path, rule):
     rec = decide(summaries, rule)
     run_dir = tmp_path / "results" / "test-run"
     memo = tmp_path / "memo" / "RECOMMENDATION.md"
+    run_dir.mkdir(parents=True)
+    (run_dir / "NOTES.md").write_text("Data correction.")
     write_report(summaries, rec, rule, run_dir, memo)
     assert (run_dir / "quality_vs_cost.png").stat().st_size > 10_000
     assert json.loads((run_dir / "summary.json").read_text())["chosen"] == "small"
@@ -68,6 +71,8 @@ def test_report_and_memo(tmp_path, rule):
     assert "Run production on **`claude-haiku-4-5`**" in text
     assert "Compared with today's configuration (big)" in text
     assert "../results/test-run/quality_vs_cost.png" in text
+    assert "Ceiling effect" in text  # every fake answer passes
+    assert "../results/test-run/NOTES.md" in text
 
 
 def test_memo_when_nothing_is_eligible(tmp_path, rule):
