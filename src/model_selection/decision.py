@@ -133,20 +133,27 @@ def decide(summaries: list[Summary], rule: DecisionRule) -> Recommendation:
 
     candidates = [s for s in eligible if verdicts[s.candidate.name].non_inferior]
     chosen = min(candidates, key=lambda s: (s.cost_per_1k, s.latency_p95))
+    margin = f"{rule.non_inferiority_margin * 100:.0f} percentage points"
     if chosen is leader:
-        rationale = (
-            f"{leader.candidate.name} has the highest pass rate among eligible candidates, and "
-            f"no cheaper candidate was shown to be within "
-            f"{rule.non_inferiority_margin:.0%} of it."
-        )
+        tied = [s for s in eligible if s.pass_rate == leader.pass_rate]
+        if len(tied) > 1:
+            rationale = (
+                f"{leader.candidate.name} ties for the highest pass rate "
+                f"({leader.pass_rate:.1%}) and is the cheapest of the {len(tied)} tied "
+                f"candidates. No cheaper candidate was shown to be within {margin} of it."
+            )
+        else:
+            rationale = (
+                f"{leader.candidate.name} has the highest pass rate among eligible candidates, "
+                f"and no cheaper candidate was shown to be within {margin} of it."
+            )
     else:
         gap = verdicts[chosen.candidate.name].gap_ci
         assert gap is not None
         rationale = (
             f"{chosen.candidate.name} is the cheapest eligible candidate whose quality is "
             f"non-inferior to the leader, {leader.candidate.name}: the 95% interval for the "
-            f"pass-rate gap is {gap[0]:+.1%} to {gap[1]:+.1%}, within the "
-            f"{rule.non_inferiority_margin:.0%} margin."
+            f"pass-rate gap is {gap[0]:+.1%} to {gap[1]:+.1%}, within the {margin} margin."
         )
     return Recommendation(
         chosen=chosen.candidate.name,

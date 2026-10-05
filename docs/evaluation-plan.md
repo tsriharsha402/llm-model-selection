@@ -28,10 +28,12 @@ production retrieval returns for it ([`data/grounded_qa.jsonl`](../data/grounded
 built by [`scripts/build_dataset.py`](../scripts/build_dataset.py)). Every candidate sees
 identical context, so differences come from generation alone.
 
-- **39 "answer" cases:** the retrieved context contains the answer.
-- **6 "abstain" cases:** the context does not contain the answer (5 questions the
-  handbook doesn't cover, 1 where retrieval missed the right document). The correct
-  response is the fixed "I don't know" sentence.
+- **34 "answer" cases:** the retrieved context contains every fact the answer needs.
+- **11 "abstain" cases:** the context does not contain the answer (5 questions the
+  handbook doesn't cover, 6 where retrieval missed the section with the answer). The
+  correct response is the fixed "I don't know" sentence.
+
+(Corrected on 2026-10-05 from 39 / 6; see [Corrections](#corrections).)
 
 ## Grading
 
@@ -73,3 +75,9 @@ Configured in [`candidates.toml`](../candidates.toml) and applied by code
 
 Any change to the rule goes in its own commit, with the reason, before a new run.
 Never in the same commit as results.
+
+## Corrections
+
+| Date | What changed | Rule changed? |
+|---|---|---|
+| 2026-10-05 | **Dataset labels.** The dataset builder labeled a case "answer" when the right *document* was retrieved, without checking that the retrieved text contained the required facts. That contradicted the Test set section of this plan, which defines answer cases as ones where "the retrieved context contains the answer". 5 cases were relabeled from "answer" to "abstain"; questions and contexts are unchanged. A test now enforces the definition. The first run's recorded answers were re-graded against the corrected labels; see [run notes](../results/2026-10-05-corrected/NOTES.md) | No |

@@ -21,6 +21,10 @@ MODEL_COLORS = {
     "claude-haiku-4-5": "#1baf7a",
 }
 EFFORT_MARKERS = {"medium": "o", "low": "s", None: "D"}
+# Medium-effort points are drawn larger and underneath, so a low-effort point at almost the
+# same cost and quality stays visible inside it instead of hiding it.
+EFFORT_SIZES = {"medium": 150, "low": 70, None: 90}
+EFFORT_ZORDER = {"medium": 3, "low": 4, None: 4}
 SURFACE = "#fcfcfb"
 TEXT_PRIMARY = "#0b0b0b"
 TEXT_SECONDARY = "#52514e"
@@ -76,12 +80,12 @@ def plot_quality_vs_cost(summaries: list[Summary], rec: Recommendation, path: Pa
         ax.scatter(
             s.cost_per_1k,
             y,
-            s=90,
+            s=EFFORT_SIZES.get(s.candidate.effort, 90),
             marker=EFFORT_MARKERS.get(s.candidate.effort, "o"),
             color=color,
             edgecolors=SURFACE,
             linewidths=2,
-            zorder=3,
+            zorder=EFFORT_ZORDER.get(s.candidate.effort, 4),
         )
 
     # Labels sit above or below the error bar, alternating along the cost axis so
@@ -142,6 +146,7 @@ def render_memo(
     run_id: str,
     chart_path: str,
     date: dt.date | None = None,
+    notes: bool = False,
 ) -> str:
     date = date or dt.date.today()
     by_name = {s.candidate.name: s for s in summaries}
@@ -155,7 +160,12 @@ def render_memo(
         f"**Date:** {date.isoformat()}  ",
         f"**Evidence:** benchmark run `{run_id}`, {n} questions per candidate  ",
         "**Decision rule:** pre-registered in [`candidates.toml`](../candidates.toml), "
-        "see [evaluation plan](../docs/evaluation-plan.md)",
+        "see [evaluation plan](../docs/evaluation-plan.md)  ",
+        *(
+            [f"**Run notes:** [read before using these results](../results/{run_id}/NOTES.md)"]
+            if notes
+            else []
+        ),
         "",
         "## Recommendation",
         "",
@@ -184,6 +194,17 @@ def render_memo(
             lines += ["This is the configuration production already runs: no change.", ""]
         lines += [f"**Why:** {rec.rationale}", ""]
 
+    if any(s.pass_rate == 1.0 for s in summaries):
+        ceiling = (
+            f"- **Ceiling effect.** At least one candidate passed every question, so its "
+            f"bootstrap interval collapses to 100%-100%. That overstates certainty: with zero "
+            f"failures in {n} questions, the true failure rate could still be up to about "
+            f"{3 / n:.0%} (rule of three). Candidates tied at 100% are separated only by cost, "
+            "so add harder questions before trusting the ordering among them."
+        )
+    else:
+        ceiling = None
+
     lines += [
         "## Options compared",
         "",
@@ -192,6 +213,7 @@ def render_memo(
         "",
         "## Risks and mitigations",
         "",
+        *([ceiling] if ceiling else []),
         f"- **Small sample.** {n} questions give wide intervals; differences of a few points "
         "are not distinguishable. Mitigation: grow the evaluation set with real, anonymized "
         "user questions and re-run before any further downgrade.",
@@ -266,5 +288,12 @@ def write_report(
         memo_path.parent.mkdir(parents=True, exist_ok=True)
         relative_chart = Path("..") / chart.relative_to(memo_path.parent.parent)
         memo_path.write_text(
-            render_memo(summaries, rec, rule, run_dir.name, relative_chart.as_posix())
+            render_memo(
+                summaries,
+                rec,
+                rule,
+                run_dir.name,
+                relative_chart.as_posix(),
+                notes=(run_dir / "NOTES.md").exists(),
+            )
         )
