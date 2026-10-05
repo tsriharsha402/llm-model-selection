@@ -1,0 +1,112 @@
+{
+  "chosen": "sonnet-5.5-low",
+  "leader": "sonnet-5.5-low",
+  "rationale": "sonnet-5.5-low ties for the highest pass rate (100.0%) and is the cheapest of the 4 tied candidates. No cheaper candidate was shown to be within 5 percentage points of it.",
+  "candidates": [
+    {
+      "name": "opus-5.5-medium",
+      "model": "claude-opus-5-5",
+      "effort": "medium",
+      "pass_rate": 1.0,
+      "pass_rate_ci": [
+        1.0,
+        1.0
+      ],
+      "keyword_recall": 1.0,
+      "citation_accuracy": 1.0,
+      "abstention_accuracy": 1.0,
+      "false_abstention_rate": 0.0,
+      "failure_rate": 0.0,
+      "latency_p50": 2.875060803999986,
+      "latency_p95": 6.058807540199995,
+      "cost_per_1k": 9.543555555555555,
+      "total_cost": 0.42946,
+      "eligible": true,
+      "reasons": []
+    },
+    {
+      "name": "opus-5.5-low",
+      "model": "claude-opus-5-5",
+      "effort": "low",
+      "pass_rate": 1.0,
+      "pass_rate_ci": [
+        1.0,
+        1.0
+      ],
+      "keyword_recall": 1.0,
+      "citation_accuracy": 1.0,
+      "abstention_accuracy": 1.0,
+      "false_abstention_rate": 0.0,
+      "failure_rate": 0.0,
+      "latency_p50": 2.5961002829999984,
+      "latency_p95": 3.726505633399972,
+      "cost_per_1k": 9.020888888888893,
+      "total_cost": 0.40594000000000013,
+      "eligible": true,
+      "reasons": []
+    },
+    {
+      "name": "sonnet-5.5-medium",
+      "model": "claude-sonnet-5-5",
+      "effort": "medium",
+      "pass_rate": 1.0,
+      "pass_rate_ci": [
+        1.0,
+        1.0
+      ],
+      "keyword_recall": 1.0,
+      "citation_accuracy": 1.0,
+      "abstention_accuracy": 1.0,
+      "false_abstention_rate": 0.0,
+      "failure_rate": 0.0,
+      "latency_p50": 1.8530148879999615,
+      "latency_p95": 4.882591980799973,
+      "cost_per_1k": 4.269777777777779,
+      "total_cost": 0.19214000000000003,
+      "eligible": true,
+      "reasons": []
+    },
+    {
+      "name": "sonnet-5.5-low",
+      "model": "claude-sonnet-5-5",
+      "effort": "low",
+      "pass_rate": 1.0,
+      "pass_rate_ci": [
+        1.0,
+        1.0
+      ],
+      "keyword_recall": 1.0,
+      "citation_accuracy": 1.0,
+      "abstention_accuracy": 1.0,
+      "false_abstention_rate": 0.0,
+      "failure_rate": 0.0,
+      "latency_p50": 1.716367009999999,
+      "latency_p95": 4.233996797599989,
+      "cost_per_1k": 4.246,
+      "total_cost": 0.19107000000000002,
+      "eligible": true,
+      "reasons": []
+    },
+    {
+      "name": "haiku-4.5",
+      "model": "claude-haiku-4-5",
+      "effort": null,
+      "pass_rate": 0.9777777777777777,
+      "pass_rate_ci": [
+        0.9333333333333333,
+        1.0
+      ],
+      "keyword_recall": 0.9705882352941176,
+      "citation_accuracy": 1.0,
+      "abstention_accuracy": 1.0,
+      "false_abstention_rate": 0.0,
+      "failure_rate": 0.0,
+      "latency_p50": 0.8152309210000226,
+      "latency_p95": 1.1213462128000284,
+      "cost_per_1k": 1.3835555555555559,
+      "total_cost": 0.06226000000000001,
+      "eligible": true,
+      "reasons": []
+    }
+  ]
+}
