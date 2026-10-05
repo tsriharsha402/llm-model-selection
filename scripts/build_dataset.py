@@ -55,8 +55,14 @@ def main() -> int:
                 }
                 for hit in hits
             ]
-            answer_in_context = case["answerable"] and any(
-                s["doc_id"] == case.get("expected_doc") for s in sources
+            # A case is "answer" only if the retrieved text actually contains every required
+            # fact. Checking for the right document is not enough: retrieval can return the
+            # right document but the wrong section (the labeling bug corrected on 2026-10-05).
+            context = " ".join(s["text"] for s in sources).lower()
+            answer_in_context = (
+                case["answerable"]
+                and any(s["doc_id"] == case.get("expected_doc") for s in sources)
+                and all(kw.lower() in context for kw in case.get("expected_keywords", []))
             )
             record = {
                 "id": case["id"],
