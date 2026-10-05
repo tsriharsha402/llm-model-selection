@@ -23,34 +23,51 @@ keep `claude-opus-5-5`, or move to a cheaper configuration?
 | **Evidence** | 45 real questions with frozen retrieval context, graded deterministically: required facts, correct citation, correct "I don't know" |
 | **Decision rule** | Cheapest candidate that passes the quality gates and is statistically non-inferior (within 5 points) to the best one. [Pre-registered](docs/evaluation-plan.md) |
 | **Budget** | Estimated $0.70-$4.65 for a full run (`make estimate`) |
-| **First run** | 2026-10-05, 225 calls, $1.28. **No candidate passed the gates**: all five scored 87.2% citation accuracy against a 90% gate. See [results](#results-2026-10-05) and the [memo](memo/RECOMMENDATION.md) |
+| **Result** | **Recommend `claude-sonnet-5-5` at low effort:** same pass rate as today's Opus 5.5 configuration on this test set, **56% cheaper** ($4.25 vs. $9.54 per 1,000 questions) and faster (1.7s vs. 2.9s median). See the [memo](memo/RECOMMENDATION.md) |
+| **Run** | 2026-10-05: 5 candidates × 45 questions, 225 calls, $1.28 measured. Graded after a [documented label correction](results/2026-10-05-corrected/NOTES.md) |
 
 ## Results (2026-10-05)
 
-Full output in [`results/2026-10-05/`](results/2026-10-05/): raw answers, summary and chart.
+Full output in [`results/2026-10-05-corrected/`](results/2026-10-05-corrected/): raw answers,
+summary, chart and [run notes](results/2026-10-05-corrected/NOTES.md).
 
-| Candidate | Pass rate (95% CI) | Citation acc. | Abstention acc. | Latency p50 / p95 | Cost / 1K questions |
-|---|---|---|---|---|---|
-| opus-5.5-medium (baseline) | 88.9% (80%-98%) | 87.2% | 100% | 2.9s / 6.1s | $9.54 |
-| opus-5.5-low | 88.9% (80%-98%) | 87.2% | 100% | 2.6s / 3.7s | $9.02 |
-| sonnet-5.5-medium | 88.9% (80%-98%) | 87.2% | 100% | 1.9s / 4.9s | $4.27 |
-| sonnet-5.5-low | 88.9% (80%-98%) | 87.2% | 100% | 1.7s / 4.2s | $4.25 |
-| haiku-4.5 | 86.7% (76%-96%) | 87.2% | 100% | 0.8s / 1.1s | $1.38 |
+| Candidate | Pass rate (95% CI) | Citation acc. | Abstention acc. | Latency p50 / p95 | Cost / 1K questions | Verdict |
+|---|---|---|---|---|---|---|
+| opus-5.5-medium (baseline) | 100% (100-100%) | 100% | 100% | 2.9s / 6.1s | $9.54 | Non-inferior, not cheapest |
+| opus-5.5-low | 100% (100-100%) | 100% | 100% | 2.6s / 3.7s | $9.02 | Non-inferior, not cheapest |
+| sonnet-5.5-medium | 100% (100-100%) | 100% | 100% | 1.9s / 4.9s | $4.27 | Non-inferior, not cheapest |
+| **sonnet-5.5-low** | 100% (100-100%) | 100% | 100% | 1.7s / 4.2s | $4.25 | **Recommended** |
+| haiku-4.5 | 97.8% (93-100%) | 100% | 100% | 0.8s / 1.1s | $1.38 | Not shown non-inferior (gap up to 7 points) |
 
-**Decision: none.** Every candidate failed the pre-registered 90% citation gate, so the rule
-recommends nothing and production stays on the baseline. The gate is not being changed after
-the fact.
+![Pass rate vs. cost](results/2026-10-05-corrected/quality_vs_cost.png)
 
-**Why every model scored the same:** all five fail the same 5 answerable questions, and in
-each one the frozen retrieval context does not contain the required fact. The models
-correctly answer "I don't know", which counts as a citation miss. 34 of 39 answerable
-questions is 87.2%, the ceiling for any model on this context. The blocker is retrieval in
-production-rag-service, not model choice.
+**Decision: `claude-sonnet-5-5`, effort `low`.** Four candidates tied at 100%; the rule picks
+the cheapest of them. Haiku 4.5 missed one fact on one question; with 45 questions the
+pass-rate gap could be as large as 7 points, which is outside the 5-point margin, so the rule
+can't call it equivalent despite costing a third as much.
 
-**What the run does show:** on the questions where the context has the answer, Sonnet 5.5
-matches Opus 5.5 at under half the cost, and Haiku 4.5 is one question behind at a seventh of
-the cost and under 1.1s p95. No model ever answered an unanswerable question, refused or
-errored. Re-run after retrieval is fixed to get a decision.
+**How to read this honestly:**
+
+- **The test set is too easy to rank the top four.** They all scored 100%, so the
+  benchmark shows they're good enough here, not which is best. With zero failures in 45
+  questions, the true failure rate could still be up to about 7%.
+- **Haiku deserves a second look** with a larger test set. If it holds, it would cut cost
+  by another two-thirds.
+- **Next:** grow the test set with harder and paraphrased questions, then re-run before
+  switching production; roll out behind a flag, as the [memo](memo/RECOMMENDATION.md) says.
+
+### The correction, and why it matters
+
+The first grading said **no model was eligible**: all five scored exactly 87.2% citation
+accuracy against a 90% gate. Very different models scoring *identically* was the clue. For 5
+questions the frozen context contained the right document but not the section with the
+answer, and every model correctly said "I don't know", which was graded as a miss.
+
+The bug was in the dataset builder, not the models or the rule. The fix makes the code match
+the [evaluation plan](docs/evaluation-plan.md#corrections)'s definition, adds a test that
+would have caught it, and re-grades the recorded answers. **The decision rule was not
+changed.** The original grading is kept in [`results/2026-10-05/`](results/2026-10-05/) for the
+audit trail.
 
 ## Why this approach
 
